@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ObalaPalava | Pidgin Translator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="ObalaPalava Logo" class="splash-logo">
+            <h1 class="splash-title">ObalaPalava</h1>
+            <p class="splash-description">Translate Di Street. Authentic Pidgin for the Digital Age.</p>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
+    <div class="app-container hidden-init" id="app-main">
+        <header>
+            <div class="logo-text">ObalaPalava <span>Beta</span></div>
+            <div class="stats" id="stats-display">Visits: -</div>
+        </header>
+
+        <main>
+            <div class="translation-card">
+                <div class="controls">
+                    <div class="toggle-group">
+                        <label>Direction:</label>
+                        <select id="direction">
+                            <option value="en_to_pidgin">English → Pidgin</option>
+                            <option value="pidgin_to_en">Pidgin → English</option>
+                        </select>
+                    </div>
+                    <div class="toggle-group">
+                        <label>Variant:</label>
+                        <select id="variant">
+                            <option value="ghana">Ghanaian (GH)</option>
+                            <option value="nigeria">Nigerian (NG)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <textarea id="input-text" placeholder="Type something here..."></textarea>
+                </div>
+
+                <div class="action-area">
+                    <button id="translate-btn">Translate</button>
+                    <div id="loader" class="loader hidden"></div>
+                </div>
+
+                <div class="output-area">
+                    <div id="output-text" class="placeholder">Translation will appear here...</div>
+                    <button id="tts-btn" class="icon-btn" disabled title="Play Audio">
+                        🔊
+                    </button>
+                    <audio id="audio-player" hidden></audio>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 ObalaPalava Platform</p>
+        </footer>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

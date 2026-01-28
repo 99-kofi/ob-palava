@@ -1,0 +1,6 @@
+Flask
+python-dotenv
+google-genai
+gTTS
+requests
+gradio_client
