@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Database
+*.db
+
+# Temporary TTS files
+app/static/audio/*
+!app/static/audio/.gitkeep
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db
