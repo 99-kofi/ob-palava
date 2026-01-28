@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, send_from_directory
 from app.services.translation_service import TranslationService
 from app.services.tts_service import TTSService
 from app.database import log_visit, log_translation, init_db, DB_NAME
@@ -6,6 +6,10 @@ import os
 import sqlite3
 
 main = Blueprint('main', __name__)
+
+@main.route('/temp_audio/<path:filename>')
+def serve_temp_audio(filename):
+    return send_from_directory('/tmp/audio', filename)
 
 # Initialize services
 translation_service = TranslationService()

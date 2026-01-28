@@ -23,4 +23,4 @@ Click **Deploy**. Vercel will automatically build the Python environment and ser
 
 > [!IMPORTANT]
 > **Technical Note on Storage:**
-> Since Vercel is a serverless platform, the local SQLite database and generated audio files (TTS) are temporary. They will reset periodically. For a production app with permanent stats, you would eventually need to connect an external database (like Vercel Postgres or MongoDB).
+> Since Vercel is a serverless platform, the local SQLite database and generated audio files (TTS) are stored in `/tmp`. These files are temporary and will reset when the serverless function spins down. This is why we've added a special `/temp_audio` route to ensure your audio plays correctly in production!

@@ -4,9 +4,17 @@ import uuid
 
 class TTSService:
     def __init__(self, static_folder):
-        self.audio_folder = os.path.join(static_folder, 'audio')
+        # On Vercel, the filesystem is read-only except for /tmp
+        if os.environ.get('VERCEL'):
+            self.audio_folder = "/tmp/audio"
+            self.url_prefix = "/temp_audio/"
+        else:
+            self.audio_folder = os.path.join(static_folder, 'audio')
+            self.url_prefix = "/static/audio/"
+            
         if not os.path.exists(self.audio_folder):
-            os.makedirs(self.audio_folder)
+            os.makedirs(self.audio_folder, exist_ok=True)
+            
         self.api_url = "https://yarngpt.ai/api/v1/tts"
         self.api_key = os.environ.get("YARNGPT_API_KEY")
 
@@ -27,7 +35,7 @@ class TTSService:
             tts = gTTS(text=text, lang='en')
             tts.save(filepath)
             
-            return f"/static/audio/{filename}"
+            return f"{self.url_prefix}{filename}"
         except Exception as e:
             print(f"Google TTS Error: {e}")
             return None
@@ -58,7 +66,7 @@ class TTSService:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
                 
-                return f"/static/audio/{filename}"
+                return f"{self.url_prefix}{filename}"
             else:
                 print(f"YarnGPT Error: {response.status_code}")
                 return None
