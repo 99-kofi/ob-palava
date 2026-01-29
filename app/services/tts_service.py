@@ -32,18 +32,24 @@ class TTSService:
             filename = f"en_{uuid.uuid4()}.mp3"
             filepath = os.path.join(self.audio_folder, filename)
             
+            # Ensure directory exists right before saving
+            if not os.path.exists(self.audio_folder):
+                os.makedirs(self.audio_folder, exist_ok=True)
+            
+            print(f"Generating Google TTS to: {filepath}")
             tts = gTTS(text=text, lang='en')
             tts.save(filepath)
             
+            print(f"Google TTS successful: {filename}")
             return f"{self.url_prefix}{filename}"
         except Exception as e:
             print(f"Google TTS Error: {e}")
-            return None
+            raise e # Pass up to route for reporting
 
     def _generate_yarngpt_tts(self, text):
         if not self.api_key:
             print("Error: YARNGPT_API_KEY not found.")
-            return None
+            raise ValueError("YARNGPT_API_KEY environment variable is missing on server.")
 
         try:
             headers = {
@@ -56,20 +62,28 @@ class TTSService:
                 "voice": "Tayo",
             }
 
+            print(f"Calling YarnGPT API for: {text[:30]}...")
             response = requests.post(self.api_url, headers=headers, json=payload, stream=True, timeout=30)
             
             if response.status_code == 200:
                 filename = f"pidgin_{uuid.uuid4()}.mp3"
                 filepath = os.path.join(self.audio_folder, filename)
                 
+                # Ensure directory exists right before saving
+                if not os.path.exists(self.audio_folder):
+                    os.makedirs(self.audio_folder, exist_ok=True)
+                
+                print(f"Saving YarnGPT audio to: {filepath}")
                 with open(filepath, "wb") as f:
                     for chunk in response.iter_content(chunk_size=8192):
                         f.write(chunk)
                 
+                print(f"YarnGPT TTS successful: {filename}")
                 return f"{self.url_prefix}{filename}"
             else:
-                print(f"YarnGPT Error: {response.status_code}")
-                return None
+                error_msg = f"YarnGPT API returned {response.status_code}: {response.text[:200]}"
+                print(error_msg)
+                raise RuntimeError(error_msg)
         except Exception as e:
             print(f"YarnGPT TTS Error: {e}")
-            return None
+            raise e

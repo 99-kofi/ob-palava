@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioPlayer.src = data.audio_url;
                 audioPlayer.play();
             } else {
-                alert("Could not generate audio");
+                alert("Audio Error: " + (data.error || "Unknown error"));
             }
 
         } catch (error) {

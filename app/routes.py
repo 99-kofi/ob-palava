@@ -52,12 +52,15 @@ def tts():
     if not text:
         return jsonify({"error": "No text provided"}), 400
         
-    audio_url = tts_service.generate_audio(text, variant, direction)
-    
-    if audio_url:
-        return jsonify({"audio_url": audio_url})
-    else:
-        return jsonify({"error": "TTS generation failed"}), 500
+    try:
+        audio_url = tts_service.generate_audio(text, variant, direction)
+        if audio_url:
+            return jsonify({"audio_url": audio_url})
+        else:
+            return jsonify({"error": "Unknown error in TTS generation"}), 500
+    except Exception as e:
+        print(f"TTS Route Error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @main.route('/analytics/stats')
 def stats():
