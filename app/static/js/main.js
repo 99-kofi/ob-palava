@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ttsBtn.disabled = true;
 
         try {
+            ttsBtn.classList.add('loading');
             const response = await fetch('/tts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -93,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
         } finally {
+            ttsBtn.classList.remove('loading');
             ttsBtn.disabled = false;
         }
     });

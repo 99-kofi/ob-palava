@@ -391,6 +391,18 @@ button#translate-btn:hover {
     cursor: not-allowed;
 }
 
+.icon-btn.loading {
+    border-top-color: var(--accent);
+    animation: spin 1s linear infinite;
+    pointer-events: none;
+    opacity: 1;
+    background: transparent;
+}
+
+.icon-btn.loading #tts-icon {
+    display: none;
+}
+
 .hidden {
     display: none;
 }
