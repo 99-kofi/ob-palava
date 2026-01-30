@@ -23,11 +23,17 @@ class TranslationService:
             
         source_text = context.get('normalized_text', text)
         
-        # 2. Translation (Force Gradio for pidgin_to_en, else Gemini)
+        # 2. Translation Routing
         try:
-            if direction == 'pidgin_to_en':
-                translated_text = self._force_gradio_translation(source_text)
+            # ONLY use Gradio for Pidgin -> English (Nigerian Variant)
+            if direction == 'pidgin_to_en' and variant == 'nigeria':
+                raw_translation = self._force_gradio_translation(source_text)
+                translated_text = self._refine_pidgin_to_en_translation(source_text, raw_translation, variant)
+            elif direction == 'pidgin_to_en' and variant == 'ghana':
+                # For Ghana Pidgin -> English, use Gemini directly for better results
+                translated_text = self._force_gemini_to_english_translation(source_text, variant)
             else:
+                # English -> Pidgin (Both variants) uses Gemini
                 translated_text = self._force_gemini_translation(source_text, variant)
         except Exception as e:
             print(f"CRITICAL Translation Error: {e}")
@@ -68,6 +74,47 @@ class TranslationService:
         except Exception as e:
             raise RuntimeError(f"Gradio Prediction Failed: {e}")
     
+    def _refine_pidgin_to_en_translation(self, original_pidgin, raw_translation, variant):
+        """Uses Gemini to polish the raw translation from Gradio, ensuring regional nuances are captured."""
+        if not self.gemini.api_key:
+            return raw_translation
+            
+        prompt = f"""
+        Refine this Pidgin to English translation.
+        
+        Source Pidgin ({variant} variant): "{original_pidgin}"
+        Initial Translation: "{raw_translation}"
+        
+        STRICT RULES:
+        1. Return ONLY the refined English translation.
+        2. Ensure it captures the specific nuances of {variant} Pidgin.
+        3. Make it sound like natural, professional English.
+        4. NO explanations or conversational filler.
+        """
+        
+        refined = self.gemini.generate_text(prompt)
+        return refined.strip() if refined else raw_translation
+
+    def _force_gemini_to_english_translation(self, text, variant):
+        """Uses Gemini to translate Pidgin to English directly."""
+        if not self.gemini.api_key:
+            raise ValueError("GEMINI_API_KEY missing.")
+            
+        prompt = f"""
+        Translate the following {variant} Pidgin text to Standard English: '{text}'.
+        
+        RULES:
+        - Return ONLY the translated English text.
+        - NO explanations or conversational filler.
+        - Ensure it captures the exact meaning of the '{variant}' phrasing.
+        """
+        result = self.gemini.generate_text(prompt)
+        
+        if result:
+            return result.strip().strip("'").strip('"')
+        else:
+            raise RuntimeError("Gemini failed to generate translation.")
+
     def _force_gemini_translation(self, text, variant):
         if not self.gemini.api_key:
             raise ValueError("GEMINI_API_KEY missing. Cannot perform real translation.")
