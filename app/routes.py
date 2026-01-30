@@ -59,8 +59,14 @@ def tts():
         else:
             return jsonify({"error": "Unknown error in TTS generation"}), 500
     except Exception as e:
-        print(f"TTS Route Error: {e}")
-        return jsonify({"error": str(e)}), 500
+        error_msg = str(e)
+        print(f"TTS Route Error: {error_msg}")
+        
+        # Sanitize common technical errors for the user
+        if "HTTPSConnectionPool" in error_msg or "Read timed out" in error_msg:
+            error_msg = "Audio service is currently busy. Please try again later."
+            
+        return jsonify({"error": error_msg}), 500
 
 @main.route('/analytics/stats')
 def stats():

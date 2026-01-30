@@ -84,6 +84,12 @@ class TTSService:
                 error_msg = f"YarnGPT API returned {response.status_code}: {response.text[:200]}"
                 print(error_msg)
                 raise RuntimeError(error_msg)
+        except requests.exceptions.Timeout:
+            print("YarnGPT Error: Connection Timed Out (30s)")
+            raise RuntimeError("The audio service is taking too long to respond. Please try again in a moment.")
+        except requests.exceptions.RequestException as e:
+            print(f"YarnGPT Network Error: {e}")
+            raise RuntimeError("We're having trouble connecting to the audio service. Please check your network.")
         except Exception as e:
             print(f"YarnGPT TTS Error: {e}")
             raise e

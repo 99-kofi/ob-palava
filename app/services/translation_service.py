@@ -73,10 +73,19 @@ class TranslationService:
             raise ValueError("GEMINI_API_KEY missing. Cannot perform real translation.")
             
         # This is now the fallback for En -> Pidgin or any other direction Gradio doesn't handle
-        prompt = f"Translate the following English text to {variant} Pidgin: '{text}'. Return only the translated text."
+        prompt = f"""
+        Translate the following English text to {variant} Pidgin: '{text}'.
+        
+        RULES:
+        - Return ONLY the translated text.
+        - Use English-based Pidgin (Broken English).
+        - DO NOT use local languages like Twi, Ga, or Fante.
+        - Ensure it sounds natural for the '{variant}' region.
+        """
         result = self.gemini.generate_text(prompt)
         
         if result:
-            return result.strip()
+            cleaned_result = result.strip().strip("'").strip('"')
+            return cleaned_result
         else:
             raise RuntimeError("Gemini failed to generate translation.")

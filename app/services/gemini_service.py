@@ -102,9 +102,10 @@ class GeminiService:
         
         STRICT RULES:
         1. Return ONLY the polished translation.
-        2. NO explanations.
-        3. NO alternate versions (ONLY ONE VERSION).
-        4. NO conversational filler.
+        2. NO explanations or conversational filler.
+        3. NO local Ghanaian languages like Twi, Fante, or Ewe. This MUST be English-based Pidgin (Broken English).
+        4. Use authentic urban slang common in {target_variant}.
+        5. DO NOT provide alternate versions.
         """
         
         result_text = self._call_gemini(prompt)
